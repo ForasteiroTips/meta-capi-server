@@ -18,7 +18,10 @@ app.post('/send-event', async (req, res) => {
         event_id,
         action_source: "website",
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
-        user_data
+        user_data: {
+          ...user_data,
+          external_id: event_id // ajuda o Meta a reconhecer como servidor
+        }
       }]
     };
 
