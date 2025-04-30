@@ -20,7 +20,7 @@ app.post('/send-event', async (req, res) => {
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
         user_data: {
           ...user_data,
-          external_id: event_id
+          external_id: user_data.fbp // usar fbp como identificador único
         }
       }]
     };
