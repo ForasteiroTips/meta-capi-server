@@ -20,13 +20,23 @@ app.post('/send-event', async (req, res) => {
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
         user_data: {
           ...user_data,
-          external_id: user_data.fbp // usar fbp como identificador único
+          external_id: user_data.fbp
         }
       }]
     };
 
+    // Log no console do Render
+    console.log(`[${new Date().toISOString()}] Evento recebido:`, {
+      event_name,
+      event_id,
+      fbp: user_data.fbp,
+      fbc: user_data.fbc,
+      user_agent: user_data.client_user_agent
+    });
+
     const url = `https://graph.facebook.com/v19.0/${process.env.PIXEL_ID}/events?access_token=${process.env.ACCESS_TOKEN}`;
     const fbRes = await axios.post(url, payload);
+
     res.status(200).json({ success: true, response: fbRes.data });
   } catch (err) {
     console.error("Erro ao enviar evento:", err.response?.data || err.message);
