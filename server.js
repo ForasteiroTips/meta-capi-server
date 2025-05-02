@@ -26,7 +26,6 @@ app.post('/send-event', async (req, res) => {
       }]
     };
 
-    // Log correto no Render
     console.log(`[${new Date().toISOString()}] Evento recebido:`, {
       event_name,
       event_id,
