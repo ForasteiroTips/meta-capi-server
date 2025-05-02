@@ -9,27 +9,31 @@ app.use(express.json());
 
 app.post('/send-event', async (req, res) => {
   try {
-    const { event_name, event_id, user_data, custom_data } = req.body;
+    const { event_name, event_id, user_data = {}, custom_data = {} } = req.body;
 
     const payload = {
       data: [{
-        event_name,
+        event_name: event_name || "Lead",
         event_time: Math.floor(Date.now() / 1000),
-        event_id,
+        event_id: event_id || `evt_${Date.now()}`,
         action_source: "website",
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
         user_data: {
           ...user_data,
-          external_id: user_data.fbp
+          external_id: user_data.fbp || user_data.fbc || `anon_${Date.now()}`,
+          fbp: user_data.fbp,
+          fbc: user_data.fbc,
         },
-        custom_data: custom_data || {}
+        custom_data: {
+          value: custom_data.value ?? 0,
+          currency: custom_data.currency || "BRL"
+        }
       }]
     };
 
-    // Log no console do Render
     console.log(`[${new Date().toISOString()}] Evento recebido:`, {
-      event_name,
-      event_id,
+      event_name: payload.data[0].event_name,
+      event_id: payload.data[0].event_id,
       fbp: user_data.fbp,
       fbc: user_data.fbc,
       user_agent: user_data.client_user_agent
