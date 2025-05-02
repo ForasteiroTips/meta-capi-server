@@ -9,43 +9,33 @@ app.use(express.json());
 
 app.post('/send-event', async (req, res) => {
   try {
-    const { event_name, event_id, user_data = {}, custom_data = {} } = req.body;
-
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-    const userAgent = user_data.client_user_agent || req.headers['user-agent'];
+    const { event_name, event_id, user_data, custom_data } = req.body;
 
     const payload = {
       data: [{
-        event_name: event_name || "Lead",
+        event_name,
         event_time: Math.floor(Date.now() / 1000),
-        event_id: event_id || `evt_${Date.now()}`,
+        event_id,
         action_source: "website",
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
         user_data: {
           ...user_data,
-          external_id: user_data.external_id || user_data.fbp || user_data.fbc || `anon_${Date.now()}`,
-          fbp: user_data.fbp,
-          fbc: user_data.fbc,
-          client_user_agent: userAgent,
-          client_ip_address: ip
+          external_id: user_data.fbp
         },
-        custom_data: {
-          value: custom_data.value ?? 0,
-          currency: custom_data.currency || "BRL"
-        }
+        custom_data: custom_data || {}
       }]
     };
 
-    console.log(`[${new Date().toISOString()}] Evento recebido:`, {
-      event_name: payload.data[0].event_name,
-      event_id: payload.data[0].event_id,
+    // Log no console do Render
+    console.log([${new Date().toISOString()}] Evento recebido:, {
+      event_name,
+      event_id,
       fbp: user_data.fbp,
       fbc: user_data.fbc,
-      ip,
-      user_agent: userAgent
+      user_agent: user_data.client_user_agent
     });
 
-    const url = `https://graph.facebook.com/v19.0/${process.env.PIXEL_ID}/events?access_token=${process.env.ACCESS_TOKEN}`;
+    const url = https://graph.facebook.com/v19.0/${process.env.PIXEL_ID}/events?access_token=${process.env.ACCESS_TOKEN};
     const fbRes = await axios.post(url, payload);
 
     res.status(200).json({ success: true, response: fbRes.data });
@@ -56,4 +46,4 @@ app.post('/send-event', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(Servidor rodando na porta ${PORT}));
