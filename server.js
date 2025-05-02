@@ -11,6 +11,9 @@ app.post('/send-event', async (req, res) => {
   try {
     const { event_name, event_id, user_data = {}, custom_data = {} } = req.body;
 
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
+    const userAgent = user_data.client_user_agent || req.headers['user-agent'];
+
     const payload = {
       data: [{
         event_name: event_name || "Lead",
@@ -20,9 +23,11 @@ app.post('/send-event', async (req, res) => {
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
         user_data: {
           ...user_data,
-          external_id: user_data.fbp || user_data.fbc || `anon_${Date.now()}`,
+          external_id: user_data.external_id || user_data.fbp || user_data.fbc || `anon_${Date.now()}`,
           fbp: user_data.fbp,
           fbc: user_data.fbc,
+          client_user_agent: userAgent,
+          client_ip_address: ip
         },
         custom_data: {
           value: custom_data.value ?? 0,
@@ -36,7 +41,8 @@ app.post('/send-event', async (req, res) => {
       event_id: payload.data[0].event_id,
       fbp: user_data.fbp,
       fbc: user_data.fbc,
-      user_agent: user_data.client_user_agent
+      ip,
+      user_agent: userAgent
     });
 
     const url = `https://graph.facebook.com/v19.0/${process.env.PIXEL_ID}/events?access_token=${process.env.ACCESS_TOKEN}`;
