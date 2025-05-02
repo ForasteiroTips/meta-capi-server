@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.post('/send-event', async (req, res) => {
   try {
-    const { event_name, event_id, user_data, custom_data } = req.body;
+    const { event_name, event_id, user_data } = req.body;
 
     const payload = {
       data: [{
@@ -21,8 +21,7 @@ app.post('/send-event', async (req, res) => {
         user_data: {
           ...user_data,
           external_id: user_data.fbp
-        },
-        custom_data: custom_data || {}
+        }
       }]
     };
 
