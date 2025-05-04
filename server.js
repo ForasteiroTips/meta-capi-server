@@ -38,17 +38,18 @@ app.post('/send-event', async (req, res) => {
     console.log(`[${new Date().toISOString()}] Evento recebido:`, {
       event_name,
       event_id,
-      fbp: user_data.fbp,
-      fbc: user_data.fbc,
-      user_agent: user_data.client_user_agent
+      user_data: filteredUserData,
+      custom_data,
     });
 
     const url = `https://graph.facebook.com/v19.0/${process.env.PIXEL_ID}/events?access_token=${process.env.ACCESS_TOKEN}`;
     const fbRes = await axios.post(url, payload);
 
+    console.log("📤 Enviado para o Facebook com sucesso:", fbRes.data);
+
     res.status(200).json({ success: true, response: fbRes.data });
   } catch (err) {
-    console.error("Erro ao enviar evento:", err.response?.data || err.message);
+    console.error("❌ Erro ao enviar evento:", err.response?.data || err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 });
