@@ -11,9 +11,7 @@ app.post('/send-event', async (req, res) => {
   try {
     const { event_name, event_id, user_data, custom_data, event_time } = req.body;
 
-    const sanitizeFbc = (fbc) => {
-      return /^fb\.1\.\d+\.[a-zA-Z0-9_-]+$/.test(fbc) ? fbc : undefined;
-    };
+    const sanitizeFbc = (fbc) => /^fb\.1\.\d+\.[a-zA-Z0-9_-]+$/.test(fbc) ? fbc : undefined;
 
     const filteredUserData = Object.fromEntries(
       Object.entries({
@@ -50,7 +48,7 @@ app.post('/send-event', async (req, res) => {
     res.status(200).json({ success: true, response: fbRes.data });
   } catch (err) {
     console.error("❌ Erro ao enviar evento:", err.response?.data || err.message);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, error: err.response?.data || err.message });
   }
 });
 
