@@ -11,10 +11,17 @@ app.post('/send-event', async (req, res) => {
   try {
     const { event_name, event_id, user_data, custom_data, event_time } = req.body;
 
-    // Sanitiza o FBC com expressão regular
     const sanitizeFbc = (fbc) => {
       return /^fb\.1\.\d+\.[a-zA-Z0-9_-]+$/.test(fbc) ? fbc : undefined;
     };
+
+    const filteredUserData = Object.fromEntries(
+      Object.entries({
+        ...user_data,
+        fbc: sanitizeFbc(user_data.fbc),
+        external_id: user_data.fbp
+      }).filter(([_, v]) => v !== undefined && v !== null && v !== "")
+    );
 
     const payload = {
       data: [{
@@ -23,11 +30,7 @@ app.post('/send-event', async (req, res) => {
         event_id,
         action_source: "website",
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
-        user_data: {
-          ...user_data,
-          fbc: sanitizeFbc(user_data.fbc),
-          external_id: user_data.fbp
-        },
+        user_data: filteredUserData,
         custom_data: custom_data || {}
       }]
     };
