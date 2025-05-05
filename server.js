@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.post('/send-event', async (req, res) => {
   try {
-    const { event_name, event_id, user_data, custom_data, event_time } = req.body;
+    const { event_name, event_id, user_data, custom_data } = req.body;
 
     const sanitizeFbc = (fbc) => /^fb\.1\.\d+\.[a-zA-Z0-9_-]+$/.test(fbc) ? fbc : undefined;
 
@@ -24,7 +24,7 @@ app.post('/send-event', async (req, res) => {
     const payload = {
       data: [{
         event_name,
-        event_time: event_time || Math.floor(Date.now() / 1000),
+        event_time: Math.floor(Date.now() / 1000), // Garante timestamp atual do servidor
         event_id,
         action_source: "website",
         event_source_url: "https://forasteirotips.github.io/forasteiro/",
